@@ -8,7 +8,9 @@ import javax.imageio.ImageIO;
 import TileMap.TileMap;
 import Entity.Animation;
 import Entity.Enemy;
-
+/****************************************************
+ * Our first enemy, the slugger                     *
+ ***************************************************/
 public class Slugger extends Enemy
 {
 	private BufferedImage[] sprites;
@@ -80,6 +82,7 @@ public class Slugger extends Enemy
 		}
 	}
 	
+	@Override
 	public void update()
 	{
 		getNextPosition();
@@ -111,6 +114,7 @@ public class Slugger extends Enemy
 		animation.update();
 	}
 	
+	@Override
 	public void draw(Graphics2D g)
 	{
 		//if(notOnScreen())

@@ -6,7 +6,9 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 
-
+/****************************************************
+ * Explosion Animation                              *
+ ***************************************************/
 public class Explosion 
 {
 	private int x;
@@ -19,6 +21,8 @@ public class Explosion
 	private BufferedImage[] sprites;
 	
 	private boolean remove;
+	
+	//constructor
 	public Explosion(int x, int y)
 	{
 		this.x = x;

@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import GameState.GameStateManager;
 
 @SuppressWarnings("serial")
+/****************************************************
+ * Game Screen                                      *
+ ****************************************************/
 public class GamePanel extends JPanel implements Runnable, KeyListener
 {
 	//dimensions of the screen
@@ -42,7 +45,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 		
 	}
 	
-	//
+	@Override
 	public void addNotify()
 	{
 		super.addNotify();
@@ -71,6 +74,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 	}
 	
 	//is called by the thread
+	@Override
 	public void run()
 	{
 		//initiates the game
@@ -128,16 +132,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 		g2.dispose();
 	}
 	
+	//handles all the key presses
+	@Override
 	public void keyTyped(KeyEvent key)
 	{
 		
 	}
 	
+	@Override
 	public void keyPressed(KeyEvent key)
 	{
 		gsm.keyPressed(key.getKeyCode());
 	}
 	
+	@Override
 	public void keyReleased(KeyEvent key)
 	{
 		gsm.keyReleased(key.getKeyCode());

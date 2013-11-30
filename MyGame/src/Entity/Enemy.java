@@ -3,7 +3,9 @@ package Entity;
 import java.awt.Graphics2D;
 
 import TileMap.TileMap;
-
+/****************************************************
+ * Controls the ENEMY movement (NOT player)         *
+ ***************************************************/
 public class Enemy extends MapObject 
 {
 	protected int health;

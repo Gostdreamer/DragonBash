@@ -7,6 +7,10 @@ import javax.imageio.ImageIO;
 
 import Main.GamePanel;
 
+/****************************************************
+ * Background Images, able to layer and scroll them *
+ * to create parallax backgrounds                   *
+ ****************************************************/
 public class Background 
 {
 	private BufferedImage image;

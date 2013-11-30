@@ -13,16 +13,27 @@ import Entity.Enemies.Slugger;
 import Main.GamePanel;
 import TileMap.Background;
 import TileMap.TileMap;
-
-public class Level1State extends GameState
+/****************************************************
+ * All Level 1 Information is held here             *
+ ****************************************************/
+public class Level1State implements GameState
 {
+	private GameStateManager gsm;
+	
+	//Core level objects 
 	private TileMap tileMap;
 	private Background bg;
-	private Player player;
-	private ArrayList<Enemy> enemies;
-	private ArrayList<Explosion> explosions;
 	private HUD hud;
 	
+	//Entities
+	private Player player;
+	private ArrayList<Enemy> enemies;
+
+	//Other Objects
+	private ArrayList<Explosion> explosions;
+	
+	
+	//Constructor
 	public Level1State(GameStateManager gsm)
 	{
 		this.gsm = gsm;
@@ -30,54 +41,75 @@ public class Level1State extends GameState
 	}
 
 	@Override
+	//Initializes the game
 	public void init() 
 	{
+		//Sets up the map and level creation
 		tileMap = new TileMap(30);
 		tileMap.loadMapType("/Maps/level1-1Type.map");
-		tileMap.loadTiles("/Tilesets/grasstileset.gif");
+		tileMap.loadTiles("/Tilesets/grasstileset4.gif");
 		tileMap.loadMap("/Maps/level1-1.map");
 		tileMap.setPosition(0,0);
 		
+		//Adds a background
 		bg = new Background("/Backgrounds/grassbg1.gif",0.1);
 		
+		//Makes the player
 		player = new Player(tileMap);
 		player.setPosition(50,50);
 		
+		//Creates Enemies
 		populateEnemies();
 		
+		//Initializes the ArrayList of explosions
 		explosions = new ArrayList<Explosion>();
 		
-		
+		//Initizlizes the HUD
 		hud = new HUD(player);
 		
 	}
 	
+	//Create Enemies in the game world
 	private void populateEnemies()
 	{
+		//Initialized the enemy array list
 		enemies = new ArrayList<Enemy>();
-//		Slugger s;
-//		Point[] points = new Point[]{
-//			new Point(860,200),
-//			new Point(1525,200),
-//			new Point(1680,200),
-//			new Point(1800,200)
-//		};
-//		
-//		for(int i = 0; i < points.length; i++)
-//		{
-//			s = new Slugger(tileMap);
-//			s.setPosition(points[i].x, points[i].y);
-//			enemies.add(s);
-//		}
+		
+		//creates a new enemy
+		Slugger s;
+		
+		//sets up where we want the enemies to be
+		Point[] points = new Point[]{
+			new Point(860,200),
+			new Point(1525,200),
+			new Point(1680,200),
+			new Point(1800,200)
+		};
+		
+		//loops through each point we specified, and adds them onto the screen as well as into our array list of enemies
+		for(int i = 0; i < points.length; i++)
+		{
+			s = new Slugger(tileMap);
+			s.setPosition(points[i].x, points[i].y);
+			enemies.add(s);
+		}
 		
 		
 	}
 
 	@Override
+	//Update all objects on the screen
 	public void update() 
 	{
+		//Update the player
 		player.update();
 		
+		if(player.isDead())
+		{
+			gsm.setState(GameStateManager.GAMEOVER);
+		}
+		
+		//scroll the tile map depending on where we are 
 		tileMap.setPosition(GamePanel.WIDTH / 2 - player.getX(),GamePanel.HEIGHT/2 - player.getY());
 		
 		//set background
@@ -85,9 +117,7 @@ public class Level1State extends GameState
 		
 		//check if player is attacking
 		player.checkAttack(enemies);
-		
-		
-		
+
 		//update all enemies
 		for(int i = 0; i < enemies.size(); i++)
 		{
@@ -101,6 +131,7 @@ public class Level1State extends GameState
 			}
 		}
 		
+		//update all the explosions
 		for(int i = 0; i < explosions.size(); i++)
 		{
 			explosions.get(i).update();
@@ -113,6 +144,7 @@ public class Level1State extends GameState
 	}
 
 	@Override
+	//draw our objects on the screen
 	public void draw(Graphics2D g) {
 		//draw background
 		bg.draw(g);
@@ -142,6 +174,7 @@ public class Level1State extends GameState
 	}
 
 	@Override
+	//Handle key presses
 	public void keyPressed(int k) 
 	{
 		if(k == KeyEvent.VK_LEFT)
@@ -176,6 +209,7 @@ public class Level1State extends GameState
 	}
 
 	@Override
+	//Handle key releases
 	public void keyReleased(int k) 
 	{
 		if(k == KeyEvent.VK_LEFT)

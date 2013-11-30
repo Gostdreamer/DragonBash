@@ -6,24 +6,21 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
 import TileMap.Background;
-/****************************************************
- * Where you go when you select Menu                *
- ****************************************************/
-public class MenuState implements GameState
+
+public class GameOver implements GameState 
 {
 	public GameStateManager gsm;
 	//the actual menu (which is a state) - States aka Screens!
 	private Background bg;
 	
 	private int currentChoice = 0;
-	private String[] options ={"Start", "Help","Quit"};
+	private String[] options ={"Restart", "Quit"};
 	
 	private Color titleColor;
 	private Font titleFont;
 	private Font font;
-
-	//Constructor
-	public MenuState(GameStateManager gsm)
+	
+	public GameOver(GameStateManager gsm)
 	{
 		this.gsm = gsm;
 		
@@ -43,22 +40,22 @@ public class MenuState implements GameState
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void init() 
 	{
-		//does nothing
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	//Updates "objects" on the screen
 	public void update() 
 	{
 		bg.update();
+		
 	}
 
 	@Override
-	//Draws "objects" and itself on the screen
 	public void draw(Graphics2D g) 
 	{
 		bg.draw(g);
@@ -66,7 +63,7 @@ public class MenuState implements GameState
 		//draw title
 		g.setColor(titleColor);
 		g.setFont(titleFont);
-		g.drawString("Dragon Tale",80,70);
+		g.drawString("GAME OVER",80,70);
 		
 		//draw menu options
 		g.setFont(font);
@@ -85,7 +82,7 @@ public class MenuState implements GameState
 		}
 		
 	}
-
+	
 	//What happens when you select an option
 	private void select()
 	{
@@ -96,16 +93,11 @@ public class MenuState implements GameState
 		}
 		if(currentChoice == 1)
 		{
-			//help
-		}
-		if(currentChoice == 2)
-		{
 			System.exit(0);
 		}
 	}
-	
+
 	@Override
-	//Handels what will happen if the key is pressed
 	public void keyPressed(int k) 
 	{
 		if(k == KeyEvent.VK_ENTER)
@@ -132,7 +124,8 @@ public class MenuState implements GameState
 	@Override
 	public void keyReleased(int k) 
 	{
-		//does nothing
+		// TODO Auto-generated method stub
+		
 	}
-	
+
 }

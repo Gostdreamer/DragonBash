@@ -1,7 +1,10 @@
 package GameState;
 
 import java.util.ArrayList;
-
+/****************************************************
+ * Controls what state of the game we are in        *
+ * AKA what Screen we are on                        *
+ ***************************************************/
 public class GameStateManager 
 {
 	//create an array list of options (gameStates)
@@ -13,12 +16,13 @@ public class GameStateManager
 	//uses constants to navigate
 	public static final int MENUSTATE = 0;
 	public static final int LEVEL1STATE = 1;
+	public static final int GAMEOVER = 2;
 	
 	
 	//constructor
 	public GameStateManager()
 	{
-		//initalize the current game state (when u start the game, u are at the menu)
+		//Initialize the current game state (when u start the game, u are at the menu)
 		gameStates = new ArrayList<GameState>();
 		
 		//set the current state to menu
@@ -27,6 +31,7 @@ public class GameStateManager
 		//add a menu to the gameStates
 		gameStates.add(new MenuState(this));
 		gameStates.add(new Level1State(this));
+		gameStates.add(new GameOver(this));
 		
 		
 	}

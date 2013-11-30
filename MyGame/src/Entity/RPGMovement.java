@@ -1,194 +1,185 @@
 package Entity;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-
+import TileMap.Tile;
 import TileMap.TileMap;
-
+/****************************************************
+ * Controls the PLAYER movement (NOT enemy)         *
+ ***************************************************/
 
 public class RPGMovement extends Player
 {
-	//private static TileMap myTM;
-	private static int bottomTile;
+	//Set up tiles relative to players position
 	private static int bottomTileType;
-	private static int currentTile;
 	private static int currentTileType;
-	private static int rightTile;
-	private static int rightTileType;
-	private static int leftTile;
-	private static int leftTileType;
-	private static int topTile;
-	private static int topTileType;
+	//private static int rightTileType;
+	//private static int leftTileType;
+	//private static int topTileType;
 	private static int lastKnownKey;
 	
+	//remember if we were sliding, and for how long
 	private static boolean wasSlide;
 	private static long slidingTime;
 	
+	//remember if we were falling, and for how long
 	private static boolean wasFalling;
 	private static long fallingTime;
 	
+	//how far can we slide?
 	private static final int SLIDE_DISTANCE = 1000;
-	
-	private static final int SLIDING = 0;
-	private static final int ONEWAY_RIGHT = 1;
-	private static final int ONEWAY_LEFT = 2;
-	private static final int LADDER = 3;
-	private static final int BOTTOM_LADDER = 4;
-	private static final int STICKY_RIGHT = 5;
-	private static final int STICKY_LEFT = 6;
-	private static final int STICKY_BOTTOM = 7;
-	private static final int STICKY_TOP = 8;
 	
 	public RPGMovement(TileMap tm, Player player) {
 		super(tm);
 
 	}
 	
-	public static void draw(Graphics2D g, Player player)
-	{
-		//x,y,30,30,false
-		g.setColor(Color.GREEN);
-
-	}
-	
+	//returns the tile type at the specified location
 	public static int getTileType(Player player, int row, int col)
 	{
-		return player.tileMap.getType(row, col);
-	}
-	
-	public static void getTileType(Player player)
-	{
-		//note that this goes off the map location, so you need to check with the TILE NUMBER, not tileType
-		bottomTile = player.tileMap.getMap(player.currRow+1, player.currCol);
-		//topTile = player.tileMap.getMap(player.currRow-1, player.currCol);
-		
-		rightTile = player.tileMap.getMap(player.currRow, player.currCol+1);
-		//leftTile = player.tileMap.getMap(player.currRow, player.currCol-1);
-		
-		currentTile = player.tileMap.getMap(player.currRow, player.currCol);
-		
-		switch (currentTile)
-		{
-			case 5:
-				currentTileType = LADDER;
-				break;
-			case 6:
-				currentTileType = BOTTOM_LADDER;
-				break;
-			default:
-				currentTileType = -1;
-		}
-		
-		switch(bottomTile)
-		{
-			case 23:
-			case 25:
-				bottomTileType = SLIDING;
-				break;
-			case 24:
-				bottomTileType = ONEWAY_LEFT;
-				break;
-			case 5:
-				bottomTileType = LADDER;
-				break;
-			default:
-				bottomTileType = -1;
-		}
-		switch(rightTile)
-		{
-			case 8:
-				rightTileType = STICKY_RIGHT;
-				break;
-			default:
-				rightTileType = -1;
-		}
+		//If anything is greater than zero (meaning it exists), get the tile type 
+		if(row > -1 && col > -1)
+			return player.tileMap.getType(row, col);
+		else //Otherwise it must not exist, so return -1
+			return -1;
 	}
 
+	//determine where the player is going to be 
 	public static void getNextPosition(Player player)
 	{
-		getTileType(player);
-		if(rightTileType == STICKY_RIGHT)
+		//figure out what tiles are relative to the player
+		//rightTileType = getTileType(player, player.currRow, player.currCol+1);
+		//leftTileType = getTileType(player, player.currRow, player.currCol-1);
+		bottomTileType = getTileType(player, player.currRow+1, player.currCol);
+		//topTileType = getTileType(player, player.currRow-1, player.currCol);
+		currentTileType = getTileType(player, player.currRow, player.currCol);
+		
+		//RIGHT tile checking
+		
+//		//if the right tile is a sticky tile, make the player unable to fall
+//		if(rightTileType == Tile.STICKY_RIGHT)
+//		{
+//			if(!player.up)
+//			{
+//				player.falling = false;
+//				wasFalling = false;
+//				player.dy = 0;
+//				
+//			}
+//		}
+		
+		//CURRENT tile checking
+		
+		//if we are currently on a ladder
+		if(currentTileType == Tile.LADDER)
 		{
-			if(!player.up)
-			{
-				player.falling = false;
-				wasFalling = false;
-				player.dy = 0;
-				
-			}
-		}
-		if(currentTileType == LADDER)
-		{
+			//if we are pressing up arrow
 			if(player.up)
 			{
+				//we are not going to fall, and we were not falling
 				player.falling = false;
 				wasFalling = false;
+				
+				//set my dy (projected movement on the y axis)
 				player.dy -= player.ladderSpeed;
 				if(player.dy < -player.ladderSpeed)
 					player.dy = -player.ladderSpeed;
 			}
+			//if we are pressing down arrow
 			else if(player.down)
 			{
+				//we are not going to fall, and we were not falling
 				player.falling = false;
 				wasFalling = false;
+				
+				//set my dy (projected movement on the y axis)
 				player.dy += player.ladderSpeed;
 				if(player.dy > player.ladderSpeed)
 					player.dy = player.ladderSpeed;
 			}
+			//we are not pressing up or down arrow
 			else
 			{
+				//we are not going to fall, and we were not falling
 				player.falling = false;
 				wasFalling = false;
+				
+				//slide down the ladder at 1/3 of ladder climbing speed
 				player.dy = player.ladderSpeed / 3;
 			}
 		}
-		if(currentTileType == BOTTOM_LADDER)
+		
+		//if we are at the bottom of the ladder
+		if(currentTileType == Tile.BOTTOM_LADDER)
 		{
+			//and we are pressing the up arrow key
 			if(player.up)
 			{
+				//we are not going to fall, and we were not falling
 				player.falling = false;
 				wasFalling = false;
 				
+				//set my dy (projected movement on the y axis)
 				player.dy -= player.ladderSpeed;
 				if(player.dy < -player.ladderSpeed)
 					player.dy = -player.ladderSpeed;
 			}
-			else if(player.down)
-			{
-				player.falling = false;
-				wasFalling = false;
-				
-				player.dy += player.ladderSpeed;
-				if(player.dy > player.ladderSpeed)
-					player.dy = player.ladderSpeed;
-			}
 		}
 		
-		if(bottomTileType == ONEWAY_RIGHT)
+		//BOTTOM tile types
+		
+		//if we run into a death block
+		if(bottomTileType == Tile.DEATH)
 		{
-			wasSlide = true;
-			lastKnownKey =1;
-
-			player.dx = player.oneWaySpeed;
+			player.setDeath(true);
 		}
-		if(bottomTileType == ONEWAY_LEFT)
+		
+		//if we are on a one-way left block
+		if(bottomTileType == Tile.ONEWAY_LEFT)
 		{
+			//remember that we were sliding
 			wasSlide = true;
+			
+			//remember that we are going left
 			lastKnownKey = 0;
 			
+			//set my dx (projected movement on the x axis)
+			player.dx = -player.oneWaySpeed;
+		}
+		//if we are on a one-way right block
+		if(bottomTileType == Tile.ONEWAY_RIGHT)
+		{
+			//remember that we were sliding
+			wasSlide = true;
+			
+			//remember that we are going right
+			lastKnownKey =1;
+			
+			//set my dx (projected movement on the x axis)
+			player.dx = player.oneWaySpeed;
+		}
+		
+		//if we are on a one-way left block
+		if(bottomTileType == Tile.ONEWAY_LEFT)
+		{
+			//remember that we were sliding
+			wasSlide = true;
+			
+			//remember that we are going left
+			lastKnownKey = 0;
+			
+			//set my dx (projected movement on the x axis)
 			player.dx = -player.oneWaySpeed;
 		}
 		
-		//player sliding
-		//determine if the bottom tile type is sliding
-		if(bottomTileType == SLIDING)
+		//if we are on an icy block
+		if(bottomTileType == Tile.ICY)
 		{
-			//tell the engine we were sliding
+			//rememer that we were sliding
 			wasSlide = true;
 
-			//capture what direction the player was going
+			//capture what direction the player was going and remember it
 			if(player.left)
 				lastKnownKey = 0;
+			
 			if(player.right)
 				lastKnownKey = 1;
 			
@@ -222,46 +213,57 @@ public class RPGMovement extends Player
 			}
 			else if(lastKnownKey == 1)
 			{
+				//set up a timer for determining the sliding distances
 				if(player.startSlide == true)
 					slidingTime = System.nanoTime();
 				
+				//only set the timer the first time
 				player.startSlide = false;
 					
+				//determine if we are speeding up or slowing down
 				if(player.canSlide == true)
 					player.dx += player.slideSpeed;
 				else
 					player.dx -= player.slideSpeed;
 				
+				//cap our speed
 				if(player.canSlide == true && player.dx > player.maxSlideSpeed)
 					player.dx = player.maxSlideSpeed;
 					
-
+				//determine how long we have been sliding
 				long elapsed = (System.nanoTime() - slidingTime) / 1000000;
 				
+				//switch our direction from speeding up to slowing down
 				if(player.dx > player.maxSlideSpeed - 0.1 && elapsed > SLIDE_DISTANCE)
 					player.canSlide = false;
 				
 			}
-			
-			
-
-
 		}
-		//player slides off the last block moved
+		
+		//if we were sliding, and we are not on an icy block
 		else if(wasSlide == true)
 		{
+			//if we were going left
 			if(lastKnownKey == 0)
 			{
+				//move to the left two steps (so we fall off the block)
 				player.dx -= player.slideSpeed+2;
+				
+				//remember that we were not sliding anymore
 				wasSlide = false;
 			}
+			//if we were going right
 			else if(lastKnownKey == 1)
 			{
+				//move to the right two steps (so we fall off the block)
 				player.dx += player.slideSpeed+2;
+				
+				//remember that we are not sliding anymore
 				wasSlide = false;
 			}
 		}
 		
+		//if we are going left
 		if(player.left)
 		{	
 			//subtract player move speed from its dx (where it is going to be) 
@@ -271,6 +273,7 @@ public class RPGMovement extends Player
 			if(player.dx < -player.maxSpeed)
 				player.dx = -player.maxSpeed;
 		}
+		//if we are going right
 		else if(player.right)
 		{
 			//add player move speed to its dx (where it is going to be)
@@ -311,8 +314,7 @@ public class RPGMovement extends Player
 			player.dx = 0;
 		}
 		
-		//jumping
-		//if(player.jumping && !player.falling )
+		//jumping and double jump
 		if(player.jumping && player.dJumpNum < 2)
 		{
 			if(player.dJumpNum == 0)
@@ -333,11 +335,22 @@ public class RPGMovement extends Player
 		//falling
 		if(player.falling)
 		{		
+			//we we were not falling before now, capture the time
 			if(wasFalling == false)
 				fallingTime = System.nanoTime();
+			
+			//we are falling now
+			wasFalling = true;
+			
 			//if in the air and gliding
 			if(player.dy > 0 && player.gliding) 
+			{
+				//fall slower
 				player.dy += player.fallSpeed * 0.1;
+				
+				//set that we are NOT falling (we are gliding, which is different)
+				wasFalling = false;
+			}
 			//else if just in the air
 			else
 				player.dy += player.fallSpeed;
@@ -354,7 +367,6 @@ public class RPGMovement extends Player
 			if(player.dy > player.maxFallSpeed)
 				player.dy = player.maxFallSpeed;
 			
-			wasFalling = true;
 			
 
 		}
@@ -362,11 +374,17 @@ public class RPGMovement extends Player
 		//falling damage
 		if(wasFalling)
 		{
+			//if I hit the ground, and I was not jumping
 			if((player.bottomLeft || player.bottomRight) && !player.jumping)
 			{
+				//figure out how long we were falling for
 				long elapsed = ((System.nanoTime() - fallingTime) / 1000000)/200;
-				if(elapsed > 8)
-					player.hit((int)elapsed - 8);
+				
+				//if we were falling for longer than specified duration, take damage
+				if(elapsed > player.fallDistanceBeforeDamage)
+					player.hit((int)elapsed - player.fallDistanceBeforeDamage);
+				
+				//we were no longer falling
 				wasFalling = false;
 			}
 		}

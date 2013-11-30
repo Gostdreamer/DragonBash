@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import TileMap.TileMap;
-
+/****************************************************
+ * Player                                           *
+ ***************************************************/
 public class Player extends MapObject
 {
 	//player stuff
@@ -43,10 +45,10 @@ public class Player extends MapObject
 	
 	protected double ladderSpeed;
 	
-	//double jump
 	protected int dJumpNum;
 	protected boolean upReleasedInAir;
 	
+	protected int fallDistanceBeforeDamage;
 	//animations
 	private ArrayList<BufferedImage[]> sprites;
 	
@@ -75,19 +77,19 @@ public class Player extends MapObject
 		cheight = 20;
 		
 		//movement
-		moveSpeed = 0.3;
-		maxSpeed = 1.6;
+		moveSpeed = 0.4;
+		maxSpeed = 1.8;
 		stopSpeed = 0.4;
 		
 		fallSpeed = 0.15;
 		maxFallSpeed = 4.0;
 		
-		jumpStart = -4.8;
+		jumpStart = -3.8;
 		stopJumpSpeed = 0.3;
 		
 		sliding = false;
-		slideSpeed = 0.4;
-		maxSlideSpeed = 1.7;
+		slideSpeed = 0.5;
+		maxSlideSpeed = 2;
 		stopSlideSpeed = 0.001;
 		canSlide = true;
 		startSlide = true;
@@ -96,10 +98,13 @@ public class Player extends MapObject
 		
 		ladderSpeed = 2;
 		
+		fallDistanceBeforeDamage = 6;
+		
 		facingRight = true;
 		
 		//stats
 		health = maxHealth = 5;
+		dead = false;
 		
 		//attacks		
 		fire = maxFire = 2500;
@@ -115,24 +120,29 @@ public class Player extends MapObject
 
 		
 		
-		//load sprites
+		//load sprite
 		try{
-			
+			//This line WILL NOT WORK unless you have specified the resources folder as a project path
 			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/playersprites.gif"));
+
+			//Initialize the BufferedImage of sprite
 			sprites = new ArrayList<BufferedImage[]>();
 			
+			//step through the spritesheet
 			for(int i = 0 ; i < 7 ; i++)
 			{
 				BufferedImage[] bi = new BufferedImage[numFrames[i]];
 				for(int j = 0; j < numFrames[i]; j++)
 				{
+					//if i isnt scratching, proceed as normal
 					if(i != SCRATCHING)
 						bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
+					//if it is scratching, double the width and height (larger sprite)
 					else
 						bi[j] = spritesheet.getSubimage(j*width*2, i*height, width*2, height);
 
 				}
-				
+				//add to the array
 				sprites.add(bi);
 			}
 			
@@ -356,6 +366,7 @@ public class Player extends MapObject
 
 	}
 	
+	//take damage
 	public void hit(int damage)
 	{
 		if(flinching)
@@ -372,9 +383,9 @@ public class Player extends MapObject
 		flinchTimer = System.nanoTime();
 	}
 	
+	//draw objects on screen
 	public void draw(Graphics2D g)
 	{
-		RPGMovement.draw(g, this);
 		setMapPosition();
 		
 		//draw fireballs
@@ -448,5 +459,13 @@ public class Player extends MapObject
 	public void setStartSlide(boolean b)
 	{
 		startSlide = b;
+	}
+	public boolean isDead()
+	{
+		return dead;
+	}
+	public void setDeath(boolean b)
+	{
+		dead = b;
 	}
 }

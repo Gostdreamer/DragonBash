@@ -1,6 +1,9 @@
 package Main;
 import javax.swing.JFrame;
 
+/****************************************************
+ * Main Window that the game resides on             *
+ ****************************************************/
 public class Game 
 {
 	public static void main(String[] args)

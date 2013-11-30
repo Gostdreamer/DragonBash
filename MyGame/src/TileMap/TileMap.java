@@ -8,6 +8,10 @@ import javax.imageio.ImageIO;
 
 import Main.GamePanel;
 
+/****************************************************
+ * Holds the entire spritesheet for level creation  *
+ * As well as the map layout for level creation     *
+ ****************************************************/
 public class TileMap 
 {
 	//position
@@ -15,9 +19,6 @@ public class TileMap
 	
 	//bounds
 	private int xmin, ymin, xmax, ymax;
-	
-	//smooth scrolling
-	//private double tween;
 	
 	//map
 	private int[][] map;
@@ -38,12 +39,12 @@ public class TileMap
 	private int numRowsToDraw;
 	private int numColsToDraw;
 	
+	//initialize basic information
 	public TileMap(int tileSize)
 	{
 		this.tileSize = tileSize;
 		numRowsToDraw = GamePanel.HEIGHT / tileSize + 2;
 		numColsToDraw = GamePanel.WIDTH / tileSize + 2;
-		//tween = 0.07;
 		
 	}
 	
@@ -51,16 +52,20 @@ public class TileMap
 	public void loadMapType(String s)
 	{
 		try{
+			//Get the file directory
 			InputStream in = getClass().getResourceAsStream(s);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			
-			numCols2 = Integer.parseInt(br.readLine()); //numTilesAccross
-			numRows2 = Integer.parseInt(br.readLine()); //numTilesDown
+			//determine how many rows and columns are in this sheet
+			numCols2 = Integer.parseInt(br.readLine()); 
+			numRows2 = Integer.parseInt(br.readLine());
 			
+			//initialize mapType to an empty 2D array with our new variables
 			mapType = new int[numRows2][numCols2];
 			
 			String delims = "\\s+";
 			
+			//Run through each number in the file, assigning it to the 2D array for later use
 			for(int r = 0; r < numRows2; r++)
 			{
 				String line = br.readLine();
@@ -70,17 +75,7 @@ public class TileMap
 				{
 					mapType[r][c] = Integer.parseInt(tokens[c]);
 				}
-			}
-			
-			for(int i = 0; i < mapType.length; i++)
-			{
-				for(int j = 0; j < mapType[0].length; j++)
-				{
-					System.out.print(mapType[i][j] + " ");
-				}
-				System.out.println("");
-			}
-			
+			}			
 			
 		}catch(Exception e)
 		{
@@ -88,26 +83,30 @@ public class TileMap
 		}
 	}
 	
-	//loads tiels into memory
+	//loads tiles into memory
 	public void loadTiles(String s)
 	{
 		try{
-			
+			//Get the file
 			tileset = ImageIO.read(getClass().getResourceAsStream(s));
 			
+			//Determine how many tiles there are
 			numTilesAcross = tileset.getWidth() / tileSize;
 			numTilesDown = tileset.getHeight() / tileSize;
-							
+			
+			//Initialize 2D Tile array with our new found dimensions
 			tiles = new Tile[numTilesDown][numTilesAcross];
 			
+			//Set up variable for holding the images
 			BufferedImage subimage;
+			
+			//Go through the spritesheet pulling out tiles and storing them in the array
 			for(int row = 0; row < numTilesDown; row++)
 			{
 				for(int col = 0; col < numTilesAcross; col++)
 				{
 					subimage = tileset.getSubimage(col * tileSize, row*tileSize, tileSize, tileSize);
 					tiles[row][col] = new Tile(subimage, mapType[row][col]);	
-					System.out.print(tiles[row][col].getType() + " " );
 				}	
 			}
 		
@@ -120,24 +119,29 @@ public class TileMap
 	
 	public void drawTiles(Graphics2D g)
 	{
-
+		//does nothing
 	}
 	
-	
+	//Loads in the map layout (also known as the level layout)
 	public void loadMap(String s)
 	{
 		try{
+			//Get the file
 			InputStream in = getClass().getResourceAsStream(s);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			
+			//determine how many rows/columns are in the file
 			numCols = Integer.parseInt(br.readLine());
 			numRows = Integer.parseInt(br.readLine());
-
+			
+			//initialize the map 2D int array with out new found dimensions
 			map = new int[numRows][numCols];
 			
+			//set up how large this entire map is
 			width = numCols * tileSize;
 			height = numRows * tileSize;
 			
+			//get our boundries
 			xmin = GamePanel.WIDTH - width;
 			xmax = 0;
 			ymin = GamePanel.HEIGHT - height;
@@ -145,6 +149,7 @@ public class TileMap
 			
 			String delims = "\\s+";
 			
+			//cycle through each number in the file and place them in the 2d array
 			for (int row = 0; row < numRows;row++)
 			{
 				String line = br.readLine();
@@ -155,54 +160,13 @@ public class TileMap
 					map[row][col] = Integer.parseInt(tokens[col]);
 				}
 			}
-			//System.out.println("OUT!");
 		}catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 	
-	public int getTileSize()
-	{
-		return tileSize;
-	}
-	
-	public int getX()
-	{
-		return (int)x;
-	}
-	
-	public int getY()
-	{
-		return (int)y;
-	}
-	public int getWidth()
-	{
-		return width;
-	}
-	public int getHeight()
-	{
-		return height;
-	}
-	public int getType(int row, int col)
-	{
-		int rc = map[row][col];
-		int r = rc / numTilesAcross;
-		int c = rc % numTilesAcross;
-		
-		return tiles[r][c].getType();
-	}
-	public void setPosition(double x, double y)
-	{
-		this.x = x;
-		this.y = y;
-		
-		fixBounds();
-		
-		colOffset = (int) -this.x / tileSize;
-		rowOffset = (int) -this.y / tileSize;
-	}
-	
+	//Makes it so that it will not pan off screen
 	private void fixBounds()
 	{
 		if(x < xmin)
@@ -215,6 +179,7 @@ public class TileMap
 			y = ymax;
 	}
 	
+	//draw the tile map
 	public void draw(Graphics2D g)
 	{
 		for(int row = rowOffset; row < rowOffset + numRowsToDraw; row++)
@@ -234,14 +199,62 @@ public class TileMap
 				int r = rc / numTilesAcross;
 				int c = rc % numTilesAcross;
 				
-				//System.out.println("R C " + r + " " + c);
 				g.drawImage(tiles[r][c].getImage(), (int) x + col * tileSize, (int) y + row * tileSize, null);
-				g.draw3DRect((int) x + col * tileSize, (int) y + row * tileSize, 30, 30, false);
-				g.drawString(Integer.toString(tiles[r][c].getType()),(int) x + col * tileSize +10, (int) y + row * tileSize+10);
+
+				//Debugging Lines:
+				//g.draw3DRect((int) x + col * tileSize, (int) y + row * tileSize, 30, 30, false);
+				//g.drawString(Integer.toString(tiles[r][c].getType()),(int) x + col * tileSize +10, (int) y + row * tileSize+10);
 				//g.drawString(r + "." + c,(int) x + col * tileSize +0, (int) y + row * tileSize+20);
-				//tiles only hold the tile type! we need to test tile map stuff
 			}
 		}
+	}
+	
+	/****************************************************
+	 * Getters and Setters								*
+	 ****************************************************/
+	public int getTileSize()
+	{
+		return tileSize;
+	}
+	
+	public int getX()
+	{
+		return (int)x;
+	}
+	
+	public int getY()
+	{
+		return (int)y;
+	}
+	
+	public int getWidth()
+	{
+		return width;
+	}
+	
+	public int getHeight()
+	{
+		return height;
+	}
+	
+	public int getType(int row, int col)
+	{
+		int rc = map[row][col];
+		int r = rc / numTilesAcross;
+		int c = rc % numTilesAcross;
+		
+		return tiles[r][c].getType();
+	}
+	
+	public void setPosition(double x, double y)
+	{
+		this.x = x;
+		this.y = y;
+		
+		fixBounds();
+		
+		colOffset = (int) -this.x / tileSize;
+		rowOffset = (int) -this.y / tileSize;
 	}
 	
 	public int getMap(int r, int c)

@@ -1,7 +1,9 @@
 package Entity;
 
 import java.awt.image.BufferedImage;
-
+/****************************************************
+ * Controls animations                              *
+ ***************************************************/
 
 public class Animation 
 {
@@ -18,6 +20,7 @@ public class Animation
 		playedOnce = false;
 	}
 	
+	//remember our frames
 	public void setFrames(BufferedImage[] frames)
 	{
 		this.frames = frames;
@@ -36,8 +39,10 @@ public class Animation
 		currentFrame = i;
 	}
 	
+	//update us!
 	public void update()
 	{
+	
 		if(delay == -1)
 			return;
 		

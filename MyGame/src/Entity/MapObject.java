@@ -5,7 +5,9 @@ import java.awt.Rectangle;
 import Main.GamePanel;
 import TileMap.Tile;
 import TileMap.TileMap;
-
+/****************************************************
+ * Base class for all of the moving items on screen *
+ ***************************************************/
 public abstract class MapObject 
 {
 	//tile stuff
@@ -79,6 +81,7 @@ public abstract class MapObject
 		tileSize = tm.getTileSize();
 	}
 	
+	//determine if two things are colliding
 	public boolean intersects(MapObject other)
 	{
 		Rectangle r1 = getCollisionBox();
@@ -86,11 +89,13 @@ public abstract class MapObject
 		return r1.intersects(r2);
 	}
 	
+	//return the collision box of the object
 	public Rectangle getCollisionBox()
 	{
 		return new Rectangle((int)x - cwidth, (int) y - cheight, cwidth, cheight);
 	}
 	
+	//check the tile map collision
 	public void checkTileMapCollision()
 	{
 		currCol = (int)x / tileSize;
@@ -169,27 +174,36 @@ public abstract class MapObject
 		
 	}
 	
+	//determine if any of the four corners are touching a solid block (for collision detection)
 	public void calculateCorners(double x, double y)
 	{
-		int leftTile = ((int) x - cwidth / 2) / tileSize;
-		int rightTile = ((int) x + cwidth / 2 -1) / tileSize;
-		int topTile = ((int) y - cheight / 2) / tileSize;
-		int bottomTile = ((int) y + cheight / 2 - 1) / tileSize;
-
+		int leftTile = (int)(x - cwidth / 2) / tileSize;
+		int rightTile = (int)(x + cwidth / 2 - 1) / tileSize;
+		int topTile = (int)(y - cheight / 2) / tileSize;
+		int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
 		
 		int tl = tileMap.getType(topTile,leftTile);
 		int tr = tileMap.getType(topTile, rightTile);
 		int bl = tileMap.getType(bottomTile, leftTile);
 		int br = tileMap.getType(bottomTile, rightTile);
 		
-		topLeft = (tl == Tile.BLOCKED);
-		topRight = (tr == Tile.BLOCKED);
-		bottomLeft = (bl == Tile.BLOCKED);
-		bottomRight = (br == Tile.BLOCKED);
-		//System.out.println(bottomLeft + " " + bottomRight);
+		topLeft = topRight = bottomLeft = bottomRight = false;
+		
+		for(int i = 0; i < Tile.getBlockedNumber(); i++)
+		{
+			if(!topLeft)
+				topLeft = (tl == Tile.BLOCKEDTILES[i]);
+			if(!topRight)
+				topRight = (tr == Tile.BLOCKEDTILES[i]);
+			if(!bottomLeft)
+				bottomLeft = (bl == Tile.BLOCKEDTILES[i]);
+			if(!bottomRight)
+				bottomRight = (br == Tile.BLOCKEDTILES[i]);
+		}
 
 	}
 	
+	//check if we are on the screen
 	public boolean notOnScreen()
 	{
 		return x + xmap + width < 0 || x + xmap - width > GamePanel.WIDTH || y + ymap + height < 0 || y + ymap - height > GamePanel.HEIGHT;

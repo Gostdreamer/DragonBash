@@ -1,7 +1,4 @@
-DragonBash
-==========
-
-Starting Code for Dragon Bash
+Starting Main Code
 
 Created in Eclipse. 
 

@@ -51,6 +51,11 @@ public class RPGMovement extends Player
 
 	}
 	
+	public static int getTileType(Player player, int row, int col)
+	{
+		return player.tileMap.getType(row, col);
+	}
+	
 	public static void getTileType(Player player)
 	{
 		//note that this goes off the map location, so you need to check with the TILE NUMBER, not tileType

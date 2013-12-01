@@ -1,0 +1,26 @@
+Items:
+
+Skills:
+
+Physical:
+    Ranged (Hand)
+    Melee
+    Boots
+        Lava-JetPack (Gliding)
+    Suits
+        Armour
+        Resistance
+        HP
+
+Magic:
+    Fire
+        Fireball
+            Damage
+            DMG
+            Range
+    Ice
+        Ice Wall
+    Wind
+        Wing Gust (Gliding)
+    Earth
+        Earth Quake

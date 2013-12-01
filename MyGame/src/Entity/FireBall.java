@@ -49,8 +49,9 @@ public class FireBall extends MapObject
 		//load sprite
 		try
 		{
-			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/fireball.gif"));
-			
+			BufferedImage spritesheet;
+			spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/fireball.gif"));
+
 			//4 is the number of frames in the basic animation
 			sprites = new BufferedImage[4];
 			for(int i = 0; i < sprites.length; i++)

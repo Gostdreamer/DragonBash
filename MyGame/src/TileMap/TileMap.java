@@ -239,6 +239,10 @@ public class TileMap
 	
 	public int getType(int row, int col)
 	{
+		if(row >= map.length)
+		{
+			return 20;
+		}
 		int rc = map[row][col];
 		int r = rc / numTilesAcross;
 		int c = rc % numTilesAcross;

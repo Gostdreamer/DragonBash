@@ -5,9 +5,9 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import TileMap.TileMap;
 import Entity.Animation;
 import Entity.Enemy;
+import TileMap.TileMap;
 /****************************************************
  * Our first enemy, the slugger                     *
  ***************************************************/
@@ -37,7 +37,9 @@ public class Slugger extends Enemy
 		try
 		{
 			//BufferedImage sprites = new BufferedImage[];
-			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/Slugger.gif"));
+			BufferedImage spritesheet;
+			spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/slugger.gif"));
+
 			sprites = new BufferedImage[3];
 			for(int i = 0;i < sprites.length ; i ++)
 			{

@@ -11,8 +11,8 @@ public class RPGMovement extends Player
 	//Set up tiles relative to players position
 	private static int bottomTileType;
 	private static int currentTileType;
-	//private static int rightTileType;
-	//private static int leftTileType;
+	private static int rightTileType;
+	private static int leftTileType;
 	//private static int topTileType;
 	private static int lastKnownKey;
 	
@@ -24,8 +24,16 @@ public class RPGMovement extends Player
 	private static boolean wasFalling;
 	private static long fallingTime;
 	
+	private static boolean wasHolding;
+	private static long holdingTime;
+	
+	private static boolean holdingOnCooldown;
+	private static long holdingTimeReset;
+	
 	//how far can we slide?
 	private static final int SLIDE_DISTANCE = 1000;
+	private static final int HOLDING_TIME = 8;
+	private static final int HOLDING_COOLDOWN = 4;
 	
 	public RPGMovement(TileMap tm, Player player) {
 		super(tm);
@@ -46,25 +54,86 @@ public class RPGMovement extends Player
 	public static void getNextPosition(Player player)
 	{
 		//figure out what tiles are relative to the player
-		//rightTileType = getTileType(player, player.currRow, player.currCol+1);
-		//leftTileType = getTileType(player, player.currRow, player.currCol-1);
+		rightTileType = getTileType(player, player.currRow, player.currCol+1);
+		leftTileType = getTileType(player, player.currRow, player.currCol-1);
 		bottomTileType = getTileType(player, player.currRow+1, player.currCol);
 		//topTileType = getTileType(player, player.currRow-1, player.currCol);
 		currentTileType = getTileType(player, player.currRow, player.currCol);
 		
 		//RIGHT tile checking
 		
-//		//if the right tile is a sticky tile, make the player unable to fall
-//		if(rightTileType == Tile.STICKY_RIGHT)
-//		{
-//			if(!player.up)
-//			{
-//				player.falling = false;
-//				wasFalling = false;
-//				player.dy = 0;
-//				
-//			}
-//		}
+		//if the right tile is a sticky tile, make the player unable to fall
+		//fix the animation!
+		if(rightTileType == Tile.STICKY_RIGHT)
+		{
+			if(wasHolding == false)
+				holdingTime = System.nanoTime();
+			
+			wasHolding = true;
+			
+			long elapsed = ((System.nanoTime() - holdingTime) / 1000000)/200;
+			
+			if(elapsed < HOLDING_TIME)
+			{
+				if(player.up && player.right)
+				{
+					player.falling = false;
+					wasFalling = false;
+					player.dy = -player.ladderSpeed;
+				}				
+				else if(player.right)
+				{
+					player.falling = false;
+					wasFalling = false;
+					player.dy = 0;
+				}
+			}
+		}
+		
+		//LEFT tile checking
+		
+		//if the left tile is a sticky tile, make the player unable to fall
+		if(leftTileType == Tile.STICKY_LEFT)
+		{
+			if(wasHolding == false)
+				holdingTime = System.nanoTime();
+			
+			wasHolding = true;
+			
+			long elapsed = ((System.nanoTime() - holdingTime) / 1000000)/200;
+			
+			if(elapsed < HOLDING_TIME)
+			{
+				if(player.up && player.left)
+				{
+					player.falling = false;
+					wasFalling = false;
+					player.dy = -player.ladderSpeed;
+				}				
+				else if(player.left)
+				{
+					player.falling = false;
+					wasFalling = false;
+					player.dy = 0;
+				}
+			}
+		}
+		
+		if(wasHolding)
+		{
+			if(holdingOnCooldown == false)
+				holdingTimeReset = System.nanoTime();
+			
+			holdingOnCooldown = true;
+			
+			long elapsed = ((System.nanoTime() - holdingTimeReset) / 1000000)/200;
+			//System.out.println(elapsed);
+			if(elapsed > HOLDING_COOLDOWN + HOLDING_TIME)
+			{
+				wasHolding = false;
+				holdingOnCooldown = false;
+			}
+		}
 		
 		//CURRENT tile checking
 		
@@ -79,9 +148,10 @@ public class RPGMovement extends Player
 				wasFalling = false;
 				
 				//set my dy (projected movement on the y axis)
-				player.dy -= player.ladderSpeed;
-				if(player.dy < -player.ladderSpeed)
-					player.dy = -player.ladderSpeed;
+				//player.dy -= player.ladderSpeed
+				player.dy = -player.ladderSpeed;
+				//if(player.dy < -player.ladderSpeed)
+				//	player.dy = -player.ladderSpeed;
 			}
 			//if we are pressing down arrow
 			else if(player.down)
@@ -91,9 +161,10 @@ public class RPGMovement extends Player
 				wasFalling = false;
 				
 				//set my dy (projected movement on the y axis)
-				player.dy += player.ladderSpeed;
-				if(player.dy > player.ladderSpeed)
-					player.dy = player.ladderSpeed;
+				//player.dy += player.ladderSpeed
+				player.dy = player.ladderSpeed;
+				//if(player.dy > player.ladderSpeed)
+				//	player.dy = player.ladderSpeed;
 			}
 			//we are not pressing up or down arrow
 			else
@@ -123,14 +194,12 @@ public class RPGMovement extends Player
 					player.dy = -player.ladderSpeed;
 			}
 		}
-		
-		//BOTTOM tile types
-		
-		//if we run into a death block
-		if(bottomTileType == Tile.DEATH)
+		if(currentTileType == Tile.DEATH)
 		{
 			player.setDeath(true);
 		}
+		
+		//BOTTOM tile types
 		
 		//if we are on a one-way left block
 		if(bottomTileType == Tile.ONEWAY_LEFT)
@@ -157,23 +226,10 @@ public class RPGMovement extends Player
 			player.dx = player.oneWaySpeed;
 		}
 		
-		//if we are on a one-way left block
-		if(bottomTileType == Tile.ONEWAY_LEFT)
-		{
-			//remember that we were sliding
-			wasSlide = true;
-			
-			//remember that we are going left
-			lastKnownKey = 0;
-			
-			//set my dx (projected movement on the x axis)
-			player.dx = -player.oneWaySpeed;
-		}
-		
 		//if we are on an icy block
 		if(bottomTileType == Tile.ICY)
 		{
-			//rememer that we were sliding
+			//remember that we were sliding
 			wasSlide = true;
 
 			//capture what direction the player was going and remember it
@@ -367,7 +423,8 @@ public class RPGMovement extends Player
 			if(player.dy > player.maxFallSpeed)
 				player.dy = player.maxFallSpeed;
 			
-			
+			player.startSlide = true;
+			player.canSlide = true;
 
 		}
 		

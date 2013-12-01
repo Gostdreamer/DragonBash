@@ -6,6 +6,7 @@ import javax.swing.JFrame;
  ****************************************************/
 public class Game 
 {
+	public static final boolean JARFILE = false;
 	public static void main(String[] args)
 	{
 		

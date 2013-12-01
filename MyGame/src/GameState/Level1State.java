@@ -47,7 +47,7 @@ public class Level1State implements GameState
 		//Sets up the map and level creation
 		tileMap = new TileMap(30);
 		tileMap.loadMapType("/Maps/level1-1Type.map");
-		tileMap.loadTiles("/Tilesets/grasstileset4.gif");
+		tileMap.loadTiles("/Tilesets/grasstileset5.gif");
 		tileMap.loadMap("/Maps/level1-1.map");
 		tileMap.setPosition(0,0);
 		
@@ -56,6 +56,7 @@ public class Level1State implements GameState
 		
 		//Makes the player
 		player = new Player(tileMap);
+		player.setDeath(false);
 		player.setPosition(50,50);
 		
 		//Creates Enemies
@@ -67,6 +68,26 @@ public class Level1State implements GameState
 		//Initizlizes the HUD
 		hud = new HUD(player);
 		
+	}
+	
+	public void reset()
+	{
+		tileMap.setPosition(0,0);
+		player.setPosition(50,50);
+		player.setDeath(false);
+		
+		for(int i = 0; i < enemies.size(); i++)
+		{
+			Enemy e = enemies.get(i);
+			e.hit(100);
+			if(e.isDead())
+			{
+				enemies.remove(i);
+				i--;
+			}
+		}
+		
+		gsm.setState(GameStateManager.GAMEOVER);
 	}
 	
 	//Create Enemies in the game world
@@ -101,13 +122,14 @@ public class Level1State implements GameState
 	//Update all objects on the screen
 	public void update() 
 	{
-		//Update the player
-		player.update();
 		
 		if(player.isDead())
 		{
-			gsm.setState(GameStateManager.GAMEOVER);
+			reset();
+			//gsm.setState(GameStateManager.GAMEOVER);
 		}
+		else
+			player.update();
 		
 		//scroll the tile map depending on where we are 
 		tileMap.setPosition(GamePanel.WIDTH / 2 - player.getX(),GamePanel.HEIGHT/2 - player.getY());

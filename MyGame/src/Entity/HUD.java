@@ -23,6 +23,7 @@ public class HUD
 		try{
 			//get the image for the HUD
 			image = ImageIO.read(getClass().getResourceAsStream("/HUD/hud.gif"));
+
 			
 			font = new Font("Arial", Font.PLAIN, 14);
 		}catch(Exception e)

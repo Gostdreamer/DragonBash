@@ -24,7 +24,7 @@ public class Tile
 	public static final int ONEWAY_RIGHT = 6;
 	public static final int STICKY_LEFT = 7;
 	public static final int STICKY_RIGHT = 8;
-	public static final int DEATH = 9;
+	public static final int DEATH = 20;
 	
 	
 	public Tile(BufferedImage image, int type)

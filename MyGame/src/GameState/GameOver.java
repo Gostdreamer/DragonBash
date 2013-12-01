@@ -20,15 +20,22 @@ public class GameOver implements GameState
 	private Font titleFont;
 	private Font font;
 	
+	//Constructor
 	public GameOver(GameStateManager gsm)
 	{
 		this.gsm = gsm;
+		init();
 		
+	}
+
+	@Override
+	public void init() 
+	{
 		try{
 			bg = new Background("/Backgrounds/menubg.gif",1);
-			
-			//Make the Background scroll left .1 pixel
-			bg.setVector(-0.1,0);
+
+			//Make the Background scroll right .1 pixel
+			bg.setVector(0.1,0);
 			
 			titleColor = new Color (128,0,0);
 			titleFont = new Font("Centry Gothic", Font.PLAIN,28);
@@ -39,12 +46,6 @@ public class GameOver implements GameState
 		{
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void init() 
-	{
-		// TODO Auto-generated method stub
 		
 	}
 

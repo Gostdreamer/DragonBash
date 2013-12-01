@@ -1,5 +1,4 @@
 package GameState;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -26,7 +25,12 @@ public class MenuState implements GameState
 	public MenuState(GameStateManager gsm)
 	{
 		this.gsm = gsm;
-		
+		init();
+	}
+	
+	@Override
+	public void init() 
+	{
 		try{
 			bg = new Background("/Backgrounds/menubg.gif",1);
 			
@@ -42,12 +46,6 @@ public class MenuState implements GameState
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	@Override
-	public void init() 
-	{
-		//does nothing
 	}
 
 	@Override

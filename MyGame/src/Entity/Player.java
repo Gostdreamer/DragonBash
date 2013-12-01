@@ -3,6 +3,7 @@ package Entity;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
 import TileMap.TileMap;
@@ -122,8 +123,9 @@ public class Player extends MapObject
 		
 		//load sprite
 		try{
+			BufferedImage spritesheet;
 			//This line WILL NOT WORK unless you have specified the resources folder as a project path
-			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/playersprites.gif"));
+			spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/playersprites.gif"));
 
 			//Initialize the BufferedImage of sprite
 			sprites = new ArrayList<BufferedImage[]>();
@@ -172,6 +174,7 @@ public class Player extends MapObject
 		getNextPosition();
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
+		System.out.println(dead);
 		
 		//check attack has stopped
 		//set it to false (toggle) if it has 
@@ -226,7 +229,8 @@ public class Player extends MapObject
 		}
 		
 		//if you are walking or idle, and you are not changing elevation, reset the double jumps
-		if( (currentAction == WALKING || currentAction == IDLE) && dy == 0)
+		//if( (currentAction == WALKING || currentAction == IDLE) && dy == 0)
+		if( (bottomLeft || bottomRight) && dy == 0)
 		{
 			upReleasedInAir = false;
 			dJumpNum = 0;
@@ -467,5 +471,10 @@ public class Player extends MapObject
 	public void setDeath(boolean b)
 	{
 		dead = b;
+	}
+	public void setTileMap(TileMap tm)
+	{
+		tileMap = tm;
+		tileSize = tm.getTileSize();
 	}
 }

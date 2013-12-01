@@ -1,0 +1,41 @@
+WORLD
+
+Physics:
+Wall Jumping
+Walking on Water
+Bouncy Items/Springs
+Waterfalls
+Swinging
+Falling Blocks/Temporary Blocks
+Pushing-Pulling
+Moving Platforms
+Hookshot/Grapling Hook
+Zipline
+Crawling/Ducking
+Anti-Gravity
+Wind Gusts
+
+World Items:
+Spikes
+Falling down items
+Destructible Objects
+Pushing-Pulling Objects
+Switches/Doors
+    Pressure
+    Timed
+    Key-Activated
+Enemy Drops
+Sticks
+Consumables - Hit object drops item
+
+Other:
+Poison
+Depth (passing behind objects)
+Lighting Effects - Dark Rooms/Torches
+Acidic Water
+
+Possible:
+Fall-Through Platforms
+Slopes
+Swimming
+

@@ -1,0 +1,12 @@
+if(Game.JARFILE)
+{
+	tileMap.loadMapType("/Resources/Maps/level1-1Type.map");
+	tileMap.loadTiles("/Resources/Tilesets/grasstileset4.gif");
+	tileMap.loadMap("/Resources/Maps/level1-1.map");
+}
+else
+{
+	tileMap.loadMapType("/Maps/level1-1Type.map");
+	tileMap.loadTiles("/Tilesets/grasstileset4.gif");
+	tileMap.loadMap("/Maps/level1-1.map");
+}

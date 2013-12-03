@@ -30,10 +30,16 @@ public class RPGMovement extends Player
 	private static boolean holdingOnCooldown;
 	private static long holdingTimeReset;
 	
+	//sprinting
+	private static long firstLeftTimer;
+	private static long firstRightTimer;
+	private static long sprintingTimer;
+	
 	//how far can we slide?
 	private static final int SLIDE_DISTANCE = 1000;
 	private static final int HOLDING_TIME = 8;
 	private static final int HOLDING_COOLDOWN = 4;
+	private static final int SPRINTING_TIME = 8;
 	
 	public RPGMovement(TileMap tm, Player player) {
 		super(tm);
@@ -49,21 +55,9 @@ public class RPGMovement extends Player
 		else //Otherwise it must not exist, so return -1
 			return -1;
 	}
-
-	//determine where the player is going to be 
-	public static void getNextPosition(Player player)
+	public static void handleRightTile(Player player)
 	{
-		//figure out what tiles are relative to the player
 		rightTileType = getTileType(player, player.currRow, player.currCol+1);
-		leftTileType = getTileType(player, player.currRow, player.currCol-1);
-		bottomTileType = getTileType(player, player.currRow+1, player.currCol);
-		//topTileType = getTileType(player, player.currRow-1, player.currCol);
-		currentTileType = getTileType(player, player.currRow, player.currCol);
-		
-		//RIGHT tile checking
-		
-		//if the right tile is a sticky tile, make the player unable to fall
-		//fix the animation!
 		if(rightTileType == Tile.STICKY_RIGHT)
 		{
 			if(wasHolding == false)
@@ -89,10 +83,12 @@ public class RPGMovement extends Player
 				}
 			}
 		}
-		
-		//LEFT tile checking
-		
-		//if the left tile is a sticky tile, make the player unable to fall
+
+	}
+	
+	public static void handleLeftTile(Player player)
+	{
+		leftTileType = getTileType(player, player.currRow, player.currCol-1);
 		if(leftTileType == Tile.STICKY_LEFT)
 		{
 			if(wasHolding == false)
@@ -134,73 +130,11 @@ public class RPGMovement extends Player
 				holdingOnCooldown = false;
 			}
 		}
-		
-		//CURRENT tile checking
-		
-		//if we are currently on a ladder
-		if(currentTileType == Tile.LADDER)
-		{
-			//if we are pressing up arrow
-			if(player.up)
-			{
-				//we are not going to fall, and we were not falling
-				player.falling = false;
-				wasFalling = false;
-				
-				//set my dy (projected movement on the y axis)
-				//player.dy -= player.ladderSpeed
-				player.dy = -player.ladderSpeed;
-				//if(player.dy < -player.ladderSpeed)
-				//	player.dy = -player.ladderSpeed;
-			}
-			//if we are pressing down arrow
-			else if(player.down)
-			{
-				//we are not going to fall, and we were not falling
-				player.falling = false;
-				wasFalling = false;
-				
-				//set my dy (projected movement on the y axis)
-				//player.dy += player.ladderSpeed
-				player.dy = player.ladderSpeed;
-				//if(player.dy > player.ladderSpeed)
-				//	player.dy = player.ladderSpeed;
-			}
-			//we are not pressing up or down arrow
-			else
-			{
-				//we are not going to fall, and we were not falling
-				player.falling = false;
-				wasFalling = false;
-				
-				//slide down the ladder at 1/3 of ladder climbing speed
-				player.dy = player.ladderSpeed / 3;
-			}
-		}
-		
-		//if we are at the bottom of the ladder
-		if(currentTileType == Tile.BOTTOM_LADDER)
-		{
-			//and we are pressing the up arrow key
-			if(player.up)
-			{
-				//we are not going to fall, and we were not falling
-				player.falling = false;
-				wasFalling = false;
-				
-				//set my dy (projected movement on the y axis)
-				player.dy -= player.ladderSpeed;
-				if(player.dy < -player.ladderSpeed)
-					player.dy = -player.ladderSpeed;
-			}
-		}
-		if(currentTileType == Tile.DEATH)
-		{
-			player.setDeath(true);
-		}
-		
-		//BOTTOM tile types
-		
+	}
+	
+	public static void handleBottomTile(Player player)
+	{
+		bottomTileType = getTileType(player, player.currRow+1, player.currCol);
 		//if we are on a one-way left block
 		if(bottomTileType == Tile.ONEWAY_LEFT)
 		{
@@ -295,7 +229,6 @@ public class RPGMovement extends Player
 				
 			}
 		}
-		
 		//if we were sliding, and we are not on an icy block
 		else if(wasSlide == true)
 		{
@@ -318,25 +251,204 @@ public class RPGMovement extends Player
 				wasSlide = false;
 			}
 		}
+	}
+	
+	public static void handleCurrentTile(Player player)
+	{
+		currentTileType = getTileType(player, player.currRow, player.currCol);
+		if(currentTileType == Tile.LADDER)
+		{
+			//if we are pressing up arrow
+			if(player.up)
+			{
+				//we are not going to fall, and we were not falling
+				player.falling = false;
+				wasFalling = false;
+				
+				//set my dy (projected movement on the y axis)
+				//player.dy -= player.ladderSpeed
+				player.dy = -player.ladderSpeed;
+				//if(player.dy < -player.ladderSpeed)
+				//	player.dy = -player.ladderSpeed;
+			}
+			//if we are pressing down arrow
+			else if(player.down)
+			{
+				//we are not going to fall, and we were not falling
+				player.falling = false;
+				wasFalling = false;
+				
+				//set my dy (projected movement on the y axis)
+				//player.dy += player.ladderSpeed
+				player.dy = player.ladderSpeed;
+				//if(player.dy > player.ladderSpeed)
+				//	player.dy = player.ladderSpeed;
+			}
+			//we are not pressing up or down arrow
+			else
+			{
+				//we are not going to fall, and we were not falling
+				player.falling = false;
+				wasFalling = false;
+				
+				//slide down the ladder at 1/3 of ladder climbing speed
+				player.dy = player.ladderSpeed / 3;
+			}
+		}
+		
+		//if we are at the bottom of the ladder
+		if(currentTileType == Tile.BOTTOM_LADDER)
+		{
+			//and we are pressing the up arrow key
+			if(player.up)
+			{
+				//we are not going to fall, and we were not falling
+				player.falling = false;
+				wasFalling = false;
+				
+				//set my dy (projected movement on the y axis)
+				player.dy -= player.ladderSpeed;
+				if(player.dy < -player.ladderSpeed)
+					player.dy = -player.ladderSpeed;
+			}
+		}
+		if(currentTileType == Tile.DEATH)
+		{
+			player.setDeath(true);
+		}
+	
+
+	}
+	
+	//determine where the player is going to be 
+	public static void getNextPosition(Player player)
+	{
+		//figure out what tiles are relative to the player
+		handleRightTile(player);
+		handleLeftTile(player);
+		handleBottomTile(player);
+		handleCurrentTile(player);
 		
 		//if we are going left
 		if(player.left)
 		{	
-			//subtract player move speed from its dx (where it is going to be) 
-			player.dx -= player.moveSpeed;
-			
-			//if player dx is less than the max speed, cap it off
-			if(player.dx < -player.maxSpeed)
-				player.dx = -player.maxSpeed;
+			long sprint = ((System.nanoTime() - sprintingTimer) / 1000000)/200;
+			if(player.lastKey == Player.KEY_LEFT)
+			{
+				if(player.sprinting && sprint < SPRINTING_TIME)
+				{
+					player.dx -= player.sprintSpeed;
+					
+					if(player.dx < -player.maxSprintSpeed)
+						player.dx = -player.maxSprintSpeed;
+				}
+				else
+				{
+					if(player.capturedLeftPress)
+					{
+						long elapsed = (System.nanoTime() - firstLeftTimer) / 1000000;
+
+						if(elapsed < 1000)
+						{
+							player.sprinting = true;
+							sprintingTimer = System.nanoTime();
+						}
+						else
+						{
+							player.sprinting = false;
+							player.capturedLeftPress = false;
+							//subtract player move speed from its dx (where it is going to be) 
+							player.dx -= player.moveSpeed;
+							
+							//if player dx is less than the max speed, cap it off
+							if(player.dx < -player.maxSpeed)
+								player.dx = -player.maxSpeed;
+						}
+					}
+					else
+					{
+						player.lastKey = -1;
+					}
+				}
+				
+			}
+			else
+			{
+				//subtract player move speed from its dx (where it is going to be) 
+				player.dx -= player.moveSpeed;
+				
+				//if player dx is less than the max speed, cap it off
+				if(player.dx < -player.maxSpeed)
+					player.dx = -player.maxSpeed;
+				
+				if(!player.capturedLeftPress)
+				{
+					player.setCapturedLeft(true);
+					firstLeftTimer = System.nanoTime();
+				}
+			}
+
 		}
 		//if we are going right
 		else if(player.right)
 		{
-			//add player move speed to its dx (where it is going to be)
-			player.dx += player.moveSpeed;
-			//if player dx is greater than the max speed, cap it off
-			if(player.dx > player.maxSpeed)
-				player.dx = player.maxSpeed;
+			long sprint = (System.nanoTime() - sprintingTimer) / 1000000/200;
+			
+			if(player.lastKey == Player.KEY_RIGHT)
+			{
+				if(player.sprinting && sprint < SPRINTING_TIME)
+				{
+					System.out.println("SPRINTING");
+					player.dx += player.sprintSpeed;
+					
+					if(player.dx > player.maxSprintSpeed)
+						player.dx = player.maxSprintSpeed;
+				}
+				else
+				{
+					if(player.capturedRightPress)
+					{
+						long elapsed = (System.nanoTime() - firstRightTimer) / 1000000;
+
+						if(elapsed < 1000)
+						{
+							sprintingTimer = System.nanoTime();
+							player.sprinting = true;
+						}
+						else
+						{
+							player.sprinting = false;
+							player.capturedRightPress = false;
+							//subtract player move speed from its dx (where it is going to be) 
+							player.dx = player.moveSpeed;
+							
+							//if player dx is less than the max speed, cap it off
+							if(player.dx > player.maxSpeed)
+								player.dx = player.maxSpeed;
+						}
+					}
+					else
+					{
+						player.lastKey = -1;
+						sprintingTimer = 0;
+					}
+				}
+				
+			}
+			else
+			{
+				//add player move speed to its dx (where it is going to be)
+				player.dx += player.moveSpeed;
+				//if player dx is greater than the max speed, cap it off
+				if(player.dx > player.maxSpeed)
+					player.dx = player.maxSpeed;
+				
+				if(!player.capturedRightPress)
+				{
+					player.setCapturedRight(true);
+					firstRightTimer = System.nanoTime();
+				}
+			}
 		}
 		//if player is not pressing any keys, it needs to slow down to a stop
 		else
@@ -370,7 +482,7 @@ public class RPGMovement extends Player
 			player.dx = 0;
 		}
 		
-		//jumping and double jump and wall jump
+		//jumping and double jump
 		if(player.jumping)
 		{
 			if (player.dJumpNum < 2)
@@ -397,8 +509,11 @@ public class RPGMovement extends Player
 			if(wasFalling == false)
 				fallingTime = System.nanoTime();
 			
-			//we are falling now
-			wasFalling = true;
+			//we are falling now, but only if we are not dead
+			if(!player.isDead())
+				wasFalling = true;
+			else
+				wasFalling = false;
 			
 			//if in the air and gliding
 			if(player.dy > 0 && player.gliding) 
@@ -433,6 +548,12 @@ public class RPGMovement extends Player
 		//falling damage
 		if(wasFalling)
 		{
+			if(player.wasOnMoving)
+			{
+				player.wasOnMoving = false;
+				fallingTime = System.nanoTime();
+			}
+			
 			//if I hit the ground, and I was not jumping
 			if((player.bottomLeft || player.bottomRight) && !player.jumping)
 			{

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import Entity.Enemy;
 import Entity.Explosion;
 import Entity.HUD;
+import Entity.MovingTileH;
+import Entity.MovingTileV;
 import Entity.Player;
 import Entity.Enemies.Slugger;
 import Main.GamePanel;
@@ -28,6 +30,7 @@ public class Level1State implements GameState
 	//Entities
 	private Player player;
 	private ArrayList<Enemy> enemies;
+	//private ArrayList<MovingTileV> horizontalTile;
 
 	//Other Objects
 	private ArrayList<Explosion> explosions;
@@ -57,7 +60,7 @@ public class Level1State implements GameState
 		//Makes the player
 		player = new Player(tileMap);
 		player.setDeath(false);
-		player.setPosition(50,50);
+		player.setPosition(50,150);
 		
 		//Creates Enemies
 		populateEnemies();
@@ -73,7 +76,7 @@ public class Level1State implements GameState
 	public void reset()
 	{
 		tileMap.setPosition(0,0);
-		player.setPosition(50,50);
+		player.setPosition(50,250);
 		player.setDeath(false);
 		
 		for(int i = 0; i < enemies.size(); i++)
@@ -114,7 +117,6 @@ public class Level1State implements GameState
 			s.setPosition(points[i].x, points[i].y);
 			enemies.add(s);
 		}
-		
 		
 	}
 
@@ -204,12 +206,14 @@ public class Level1State implements GameState
 			player.setCanSlide(true);
 			player.setStartSlide(true);
 			player.setLeft(true);
+			player.setUpdated(true);
 		}
 		if(k == KeyEvent.VK_RIGHT)
 		{
 			player.setCanSlide(true);
 			player.setStartSlide(true);
 			player.setRight(true);
+			player.setUpdated(true);
 		}
 		if(k==KeyEvent.VK_UP)
 			player.setUp(true);
@@ -237,9 +241,17 @@ public class Level1State implements GameState
 	public void keyReleased(int k) 
 	{
 		if(k == KeyEvent.VK_LEFT)
+		{
 			player.setLeft(false);
+			player.setUpdated(false);
+			player.checkSprint();
+		}
 		if(k == KeyEvent.VK_RIGHT)
+		{
 			player.setRight(false);
+			player.setUpdated(false);
+			player.checkSprint();
+		}
 		if(k==KeyEvent.VK_UP)
 			player.setUp(false);
 		if(k==KeyEvent.VK_DOWN)

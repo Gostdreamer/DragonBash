@@ -370,22 +370,24 @@ public class RPGMovement extends Player
 			player.dx = 0;
 		}
 		
-		//jumping and double jump
-		if(player.jumping && player.dJumpNum < 2)
+		//jumping and double jump and wall jump
+		if(player.jumping)
 		{
-			if(player.dJumpNum == 0)
+			if (player.dJumpNum < 2)
 			{
-				player.dJumpNum += 1;
-				player.dy = player.jumpStart;
-				player.falling = true;
+				if (player.dJumpNum == 0)
+				{
+					player.dJumpNum += 1;
+					player.dy = player.jumpStart;
+					player.falling = true;
+				}
+				else if (player.upReleasedInAir)
+				{
+					player.dJumpNum += 1;
+					player.dy = player.jumpStart;
+					player.falling = true;
+				}
 			}
-			else if(player.upReleasedInAir)
-			{
-				player.dJumpNum += 1;
-				player.dy = player.jumpStart;
-				player.falling = true;
-			}
-
 		}
 		
 		//falling

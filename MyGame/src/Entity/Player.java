@@ -564,6 +564,9 @@ public class Player extends MapObject
 			//for sprinting
 			updateKey(KEY_CRAWLING);
 			
+			// Cancel sprinting if we were doing it
+			sprinting = false;
+			
 			cheight = 10;
 			// If we were not crawling before, then increase Y (half of the
 			// height change) to avoid a "falling" movement

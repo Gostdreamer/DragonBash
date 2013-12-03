@@ -344,7 +344,7 @@ public class RPGMovement extends Player
 				}
 				else
 				{
-					if(player.capturedLeftPress)
+					if(player.capturedLeftPress && !player.crawling)
 					{
 						long elapsed = (System.nanoTime() - firstLeftTimer) / 1000000;
 
@@ -406,7 +406,7 @@ public class RPGMovement extends Player
 				}
 				else
 				{
-					if(player.capturedRightPress)
+					if(player.capturedRightPress && !player.crawling)
 					{
 						long elapsed = (System.nanoTime() - firstRightTimer) / 1000000;
 

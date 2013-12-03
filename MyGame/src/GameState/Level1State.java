@@ -221,6 +221,8 @@ public class Level1State implements GameState
 			player.setGliding(true);
 		if(k==KeyEvent.VK_R)
 			player.setScratching();
+		if(k==KeyEvent.VK_S)
+			player.setCrawling(true);
 		if(k==KeyEvent.VK_F)
 		{
 			player.setFiring();
@@ -242,6 +244,8 @@ public class Level1State implements GameState
 			player.setUp(false);
 		if(k==KeyEvent.VK_DOWN)
 			player.setDown(false);
+		if(k==KeyEvent.VK_S)
+			player.setCrawling(false);
 		if(k==KeyEvent.VK_W)
 		{
 			player.setJumping(false);

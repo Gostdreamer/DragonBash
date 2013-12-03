@@ -32,6 +32,9 @@ public class Player extends MapObject
 	private int scratchDamage;
 	private int scratchRange;
 	
+	//crawling
+	protected boolean crawling;
+	
 	//extra movement
 	protected boolean gliding;
 	protected boolean sliding;
@@ -476,5 +479,31 @@ public class Player extends MapObject
 	{
 		tileMap = tm;
 		tileSize = tm.getTileSize();
+	}
+
+	public boolean isCrawling()
+	{
+		return crawling;
+	}
+
+	public void setCrawling(boolean b)
+	{
+		if (b)
+		{
+			cheight = 10;
+			// If we were not crawling before, then increase Y (half of the height change) to avoid a "falling" movement
+			if (!crawling)
+				y += 5;
+			maxSpeed = 0.8;
+		}
+		else
+		{
+			cheight = 20;
+			// If we were crawling before, then decrease Y (half of the height change) to avoid it getting stuck inside the ground
+			if (crawling)
+				y -= 5;
+			maxSpeed = 1.6;
+		}
+		this.crawling = b;
 	}
 }

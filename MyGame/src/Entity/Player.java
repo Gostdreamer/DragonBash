@@ -597,7 +597,7 @@ public class Player extends MapObject
 			//for sprinting and key capture
 			updateKey(KEY_JUMP);
 			
-			System.out.println(lastWallJumpSide);
+			System.out.println(lastWallJumpSide + "/" + dJumpNum);
 			// If we are hitting a wall then bounce to the other side
 			if (lastWallJumpSide >= 0 && topLeft)
 			{
@@ -611,7 +611,7 @@ public class Player extends MapObject
 				dx = -wallJumpSpeed;
 				lastWallJumpSide = 1;
 			}
-			else
+			else if (dJumpNum == 0)
 			{
 				lastWallJumpSide = 0;
 			}

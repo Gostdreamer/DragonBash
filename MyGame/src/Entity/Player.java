@@ -6,6 +6,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import Entity.Block.FallingBlock;
+import Entity.Block.MovingTileH;
+import Entity.Block.MovingTileV;
 import TileMap.TileMap;
 /****************************************************
  * Player                                           *
@@ -175,7 +178,6 @@ public class Player extends MapObject
 		//load sprite
 		try{
 			BufferedImage spritesheet;
-			//This line WILL NOT WORK unless you have specified the resources folder as a project path
 			spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player/playersprites.gif"));
 
 			//Initialize the BufferedImage of sprite
@@ -187,7 +189,7 @@ public class Player extends MapObject
 				BufferedImage[] bi = new BufferedImage[numFrames[i]];
 				for(int j = 0; j < numFrames[i]; j++)
 				{
-					//if i isnt scratching, proceed as normal
+					//if i isn't scratching, proceed as normal
 					if(i != SCRATCHING)
 						bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
 					//if it is scratching, double the width and height (larger sprite)
@@ -233,6 +235,39 @@ public class Player extends MapObject
 				}
 				
 				wasOnMoving = true;
+			}
+		}
+	}
+	
+	public void checkFallingB(ArrayList<FallingBlock> fallingBlocks)
+	{
+		for(int i = 0 ; i < fallingBlocks.size(); i++)
+		{
+			if(fallingBlocks.get(i).getIsVisible())
+			{
+				if(fallingBlocks.get(i).intersects(this))
+				{
+					if(falling)
+					{
+						if(!fallingBlocks.get(i).getIsFalling())
+							y -= maxFallSpeed;
+					}
+					else if (right)
+						x -= 2;
+					else if (left)
+						x += 2;	
+					
+					fallingBlocks.get(i).setTimer();
+					fallingBlocks.get(i).checkFall();
+
+					dJumpNum = 0;
+					wasOnMoving = true;
+				}
+				else if(!fallingBlocks.get(i).getAlwaysFall() && !fallingBlocks.get(i).getIsFalling())
+				{
+					fallingBlocks.get(i).reset();
+				}
+					
 			}
 		}
 	}

@@ -35,6 +35,9 @@ public class RPGMovement extends Player
 	private static long firstRightTimer;
 	private static long sprintingTimer;
 	
+	//how long between presses that it will active sprint
+	private static int sprintDelay = 350;
+	
 	//how far can we slide?
 	private static final int SLIDE_DISTANCE = 1000;
 	private static final int HOLDING_TIME = 8;
@@ -58,6 +61,7 @@ public class RPGMovement extends Player
 	public static void handleRightTile(Player player)
 	{
 		rightTileType = getTileType(player, player.currRow, player.currCol+1);
+		
 		if(rightTileType == Tile.STICKY_RIGHT)
 		{
 			if(wasHolding == false)
@@ -348,7 +352,7 @@ public class RPGMovement extends Player
 					{
 						long elapsed = (System.nanoTime() - firstLeftTimer) / 1000000;
 
-						if(elapsed < 1000)
+						if(elapsed < sprintDelay)
 						{
 							player.sprinting = true;
 							sprintingTimer = System.nanoTime();
@@ -410,7 +414,7 @@ public class RPGMovement extends Player
 					{
 						long elapsed = (System.nanoTime() - firstRightTimer) / 1000000;
 
-						if(elapsed < 1000)
+						if(elapsed < sprintDelay)
 						{
 							sprintingTimer = System.nanoTime();
 							player.sprinting = true;
@@ -559,6 +563,7 @@ public class RPGMovement extends Player
 			{
 				//figure out how long we were falling for
 				long elapsed = ((System.nanoTime() - fallingTime) / 1000000)/200;
+				//System.out.println(elapsed);
 				
 				//if we were falling for longer than specified duration, take damage
 				if(elapsed > player.fallDistanceBeforeDamage)

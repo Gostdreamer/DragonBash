@@ -30,6 +30,8 @@ public class Level1State implements GameState
 	//Entities
 	private Player player;
 	private ArrayList<Enemy> enemies;
+	private ArrayList<MovingTileH>movingH;
+	private ArrayList<MovingTileV>movingV;
 	//private ArrayList<MovingTileV> horizontalTile;
 
 	//Other Objects
@@ -64,7 +66,8 @@ public class Level1State implements GameState
 		
 		//Creates Enemies
 		populateEnemies();
-		
+		populateMovingH();
+		populateMovingV();
 		//Initializes the ArrayList of explosions
 		explosions = new ArrayList<Explosion>();
 		
@@ -91,6 +94,42 @@ public class Level1State implements GameState
 		}
 		
 		gsm.setState(GameStateManager.GAMEOVER);
+	}
+	
+	//Create Moving tiles in the game world
+	private void populateMovingH()
+	{
+		movingH = new ArrayList<MovingTileH>();
+		
+		MovingTileH newTile;
+		
+		Point[] points = new Point[]{
+				new Point(150,150)
+		};
+		
+		for(int i = 0; i < points.length; i++)
+		{
+			newTile = new MovingTileH(tileMap,15,1.0);
+			newTile.setPosition(points[i].x, points[i].y);
+			movingH.add(newTile);
+		}
+	}
+	
+	private void populateMovingV()
+	{
+		movingV = new ArrayList<MovingTileV>();
+		MovingTileV newTile;
+		Point[] points = new Point[]{
+				new Point(150,150)
+		};
+		
+		for(int i = 0; i < points.length; i++)
+		{
+			newTile = new MovingTileV(tileMap,10,1.0);
+			newTile.setPosition(points[i].x, points[i].y);
+			movingV.add(newTile);
+		}
+		
 	}
 	
 	//Create Enemies in the game world
@@ -141,6 +180,8 @@ public class Level1State implements GameState
 		
 		//check if player is attacking
 		player.checkAttack(enemies);
+		player.checkMovingH(movingH);
+		player.checkMovingV(movingV);
 
 		//update all enemies
 		for(int i = 0; i < enemies.size(); i++)
@@ -165,6 +206,16 @@ public class Level1State implements GameState
 				i--;
 			}
 		}
+		
+		for(int i = 0; i < movingH.size(); i++)
+		{
+			movingH.get(i).update();
+		}
+		
+		for(int i = 0; i < movingV.size(); i++)
+		{
+			movingV.get(i).update();
+		}
 	}
 
 	@Override
@@ -187,6 +238,16 @@ public class Level1State implements GameState
 		{
 			explosions.get(i).setMapPosition(tileMap.getX(), tileMap.getY());
 			explosions.get(i).draw(g);
+		}
+		
+		for(int i = 0; i < movingH.size(); i++)
+		{
+			movingH.get(i).draw(g);
+		}
+		
+		for(int i = 0; i < movingV.size(); i++)
+		{
+			movingV.get(i).draw(g);
 		}
 		
 		//draw player

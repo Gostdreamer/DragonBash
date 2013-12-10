@@ -16,11 +16,11 @@ public class MovingTileH extends MapObject
 	private int distance;
 	private long timeTraveled;
 	
-	public MovingTileH(TileMap tm, int dist) 
+	public MovingTileH(TileMap tm, int dist, double speed) 
 	{
 		super(tm);
 		
-		moveSpeed = 1.0;
+		moveSpeed = speed;
 		
 		width = 30;
 		height = 30;
@@ -58,6 +58,20 @@ public class MovingTileH extends MapObject
 			
 		
 	}
+	public int getDir()
+	{
+		if(right)
+			return 0;
+		else
+			return 1;
+				
+	}
+	
+	public double getSpeed()
+	{
+		return moveSpeed;
+	}
+	
 	public void changeDir()
 	{
 		if(right)

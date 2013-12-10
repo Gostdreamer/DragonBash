@@ -59,6 +59,7 @@ public class Player extends MapObject
 	
 	protected int dJumpNum;
 	protected boolean upReleasedInAir;
+	
 	/**
 	 * Last side where we made a wall jump on this current jump, this is saved so we avoid "climbing" on one side of the wall
 	 */
@@ -139,6 +140,7 @@ public class Player extends MapObject
 		
 		wasOnMoving = false;
 		
+		
 		lastKey = -1;
 		currentKey = -1;
 		
@@ -210,6 +212,66 @@ public class Player extends MapObject
 		animation.setDelay(400);
 	}
 	
+	public void checkMovingH(ArrayList<MovingTileH> movingHs)
+	{
+		
+		for(int i = 0; i < movingHs.size(); i++)
+		{
+			if(y < movingHs.get(i).getY())
+			{
+				if(movingHs.get(i).intersects(this))	
+				{
+					MovingTileH tempTile = movingHs.get(i);
+					
+					if(tempTile.getDir() == 0)
+						x += tempTile.getSpeed();
+					else
+						x -= tempTile.getSpeed();
+					
+					y = tempTile.getY() - tempTile.cheight;
+
+				}
+				
+				wasOnMoving = true;
+			}
+		}
+	}
+	
+	public void checkMovingV(ArrayList<MovingTileV> movingVs)
+	{
+		for(int i = 0; i < movingVs.size(); i++)
+		{
+			if(y < movingVs.get(i).getY())
+			{
+				if(movingVs.get(i).intersects(this))	
+				{
+					MovingTileV tempTile = movingVs.get(i);
+					
+					//0 = down, 1 = up
+					if(tempTile.getDir() == 1)
+						y -= maxFallSpeed + tempTile.getSpeed();
+					else
+						y -= maxFallSpeed - tempTile.getSpeed();
+
+					dJumpNum = 0;
+					
+					if(y+cheight+ 0.5 > tempTile.getY())
+						y -= (y+cheight+0.5 - tempTile.getY());
+
+				}
+				
+				wasOnMoving = true;
+			}
+			else if( movingVs.get(i).intersects(this))
+			{
+				if (right)
+					x -= 2;
+				else if (left)
+					x += 2;				
+			}
+		}
+	}
+
 	public void update()
 	{
 		//update position
@@ -393,7 +455,7 @@ public class Player extends MapObject
 			for(int j = 0; j < fireBalls.size(); j++)
 			{
 				if(fireBalls.get(j).intersects(e))	
-			{
+				{
 					e.hit(fireBallDamage);
 					fireBalls.get(j).setHit();
 				}
@@ -467,7 +529,7 @@ public class Player extends MapObject
 	{
 		if(sprinting)
 		{
-			System.out.println("RESET VAR");
+			//System.out.println("RESET VAR");
 			sprinting = false;
 			capturedLeftPress = false;
 			capturedRightPress = false;
@@ -564,12 +626,10 @@ public class Player extends MapObject
 			//for sprinting
 			updateKey(KEY_CRAWLING);
 			
-			// Cancel sprinting if we were doing it
 			sprinting = false;
 			
 			cheight = 10;
-			// If we were not crawling before, then increase Y (half of the
-			// height change) to avoid a "falling" movement
+			// If we were not crawling before, then increase Y (half of the height change) to avoid a "falling" movement
 			if (!crawling)
 				y += 5;
 			maxSpeed = 0.8;
@@ -577,8 +637,7 @@ public class Player extends MapObject
 		else
 		{
 			cheight = 20;
-			// If we were crawling before, then decrease Y (half of the height
-			// change) to avoid it getting stuck inside the ground
+			// If we were crawling before, then decrease Y (half of the height change) to avoid it getting stuck inside the ground
 			if (crawling)
 				y -= 5;
 			maxSpeed = 1.6;
@@ -593,28 +652,28 @@ public class Player extends MapObject
 	@Override
 	public void setJumping(boolean b)
 	{
-		System.out.println("HERE");
+		//System.out.println("HERE");
 		super.setJumping(b);
 		if (b)
 		{
 			//for sprinting and key capture
 			updateKey(KEY_JUMP);
-			
-			System.out.println(lastWallJumpSide + "/" + dJumpNum);
+
 			// If we are hitting a wall then bounce to the other side
-			if (lastWallJumpSide >= 0 && topLeft)
+			if (lastWallJumpSide >= 0 && tileMap.getType(currRow, currCol-1) == 1)
 			{
 				dJumpNum = 0;
-				dx = wallJumpSpeed;
+				//dx = wallJumpSpeed;
 				lastWallJumpSide = -1;
+				
 			}
-			else if (lastWallJumpSide <= 0 && topRight)
+			else if (lastWallJumpSide <= 0 && tileMap.getType(currRow, currCol+1) == 1)
 			{
 				dJumpNum = 0;
-				dx = -wallJumpSpeed;
+				//dx = -wallJumpSpeed;
 				lastWallJumpSide = 1;
 			}
-			else if (dJumpNum == 0)
+			else if(dJumpNum == 0)
 			{
 				lastWallJumpSide = 0;
 			}
